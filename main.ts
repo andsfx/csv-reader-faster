@@ -13,6 +13,7 @@ setFlagsFromString('--no-incremental-marking');
 type Case = { id: string; input: { text: string; header?: boolean } };
 type Entry = { run: (input: Case['input']) => unknown };
 
+// A .js module carries no types, so it is imported by URL and typed here.
 const { run } = (await import(new URL('./solve.js', import.meta.url).href)) as Entry;
 
 const INPUT_DIR = process.env.MAKEFUN_INPUT_DIR ?? '/input';
@@ -20,13 +21,15 @@ const OUTPUT_DIR = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
 
 const cases = JSON.parse(readFileSync(join(INPUT_DIR, 'cases.json'), 'utf8')) as Case[];
 
-// One answer is written at a time. The bytes are those of JSON.stringify(answers): a '[' first, then
-// each answer's JSON separated by commas, then ']'. Keeping one answer graph alive instead of all of
-// them cuts the peak heap and the collector work, and the file is byte-for-byte the same.
-const out = openSync(join(OUTPUT_DIR, 'answers.json'), 'w');
-writeSync(out, '[');
-for (let i = 0; i < cases.length; i += 1) {
-  writeSync(out, (i ? ',' : '') + JSON.stringify(run(cases[i].input)));
+// Write each answer as it is produced. The bytes are exactly those of JSON.stringify(answers), and
+// keeping only one answer graph alive cuts the collector's work on a 12 MB output.
+const output = openSync(join(OUTPUT_DIR, 'answers.json'), 'w');
+let first = true;
+writeSync(output, '[');
+for (const c of cases) {
+  const json = JSON.stringify(run(c.input));
+  writeSync(output, first ? json : ',' + json);
+  first = false;
 }
-writeSync(out, ']');
-closeSync(out);
+writeSync(output, ']');
+closeSync(output);
