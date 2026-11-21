@@ -27,12 +27,13 @@ runs on this machine:
 | entry | median CPU |
 | --- | --- |
 | csv-reader 1.0.0 (house figure) | 1.82 s |
-| csv-reader 1.0.0 (same machine, same load) | 1.94 s |
-| this entry | 0.75 s |
+| csv-reader 1.0.0 (same machine, same load) | 1.99 s |
+| this entry | 0.80 s |
 
-Seven runs of this entry: 0.77, 0.77, 0.75, 0.74, 0.72, 0.77, 0.73 s. That is 2.4x against the
-house's 1.82 s figure and 2.6x against the baseline measured here under the same load. Two runs into
-two different output directories produced byte-identical `answers.json` files.
+Seven runs of this entry: 0.85, 0.84, 0.77, 0.80, 0.82, 0.79, 0.76 s. The baseline's seven runs,
+measured back to back with them: 2.03, 2.02, 2.00, 1.98, 1.96, 1.96, 1.99 s. That is 2.3x against
+the house's 1.82 s figure and 2.5x against the baseline measured here under the same load. Two runs
+into two different output directories produced byte-identical `answers.json` files.
 
 Local grade, twice:
 
